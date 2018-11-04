@@ -46,19 +46,7 @@ The authors then calulated their dependent variable: the perceived difference be
 "An independent-samples t test with compatibility condition
 (compatible vs. incompatible) as the independent
 variable and the perceived difference between
-Romney’s and Obama’s general ideologies as the dependent variable showed a significant difference
-between conditions. Specifically, participants in the
-incompatible condition perceived the difference
-between the candidates’ ideologies as smaller than did
-participants in the compatible condition, t(237) = 2.06,
-p = .04, d = 0.27, 95% confidence interval (CI) for the
-mean difference = [0.02, 1.08] (see Table 1 for means
-and standard deviations).4 Additionally, participants in
-the incompatible condition perceived the difference
-between the candidates’ stances on specific political
-issues as smaller than did participants in the compatible
-condition, t(237) = 2.38, p = .02, d = 0.31, 95% CI
-for the mean difference = [0.08, 0.82] (see Table 1)"
+Romney’s and Obama’s general ideologies as the dependent variable showed a significant difference between conditions. Specifically, participants in the incompatible condition perceived the difference between the candidates’ ideologies as smaller than did participants in the compatible condition, t(237) = 2.06, p = .04, d = 0.27, 95% confidence interval (CI) for the mean difference = [0.02, 1.08] (see Table 1 for means and standard deviations).4 Additionally, participants in the incompatible condition perceived the difference between the candidates’ stances on specific political issues as smaller than did participants in the compatible condition, t(237) = 2.38, p = .02, d = 0.31, 95% CI for the mean difference = [0.08, 0.82] (see Table 1)"
 ------
 
 [PILOT/COPILOT DO NOT CHANGE THE CODE IN THE CHUNK BELOW]  
@@ -95,21 +83,87 @@ reportObject <- data.frame(dummyRow = TRUE, reportedValue = NA, obtainedValue = 
 
 # Step 3: Tidy data
 
+
 ```{r}
+kleimantidy = Kleiman_et_al_Study_1_ %>%
+  filter(Check_pass==1, Categorize_correct>85) %>%
+  mutate(Pnum = as.numeric(Pnum)) %>%
+  gather(Question, Response, 3:151) %>%
+  mutate(OIdeology = str_extract(Question, "O_ideology|O_economic|O_social")) %>%
+  mutate(RIdeology = str_extract(Question, "R_ideology|R_economic|R_social")) %>%
+  mutate(OSpecific_Issue = str_extract(Question, "O_environment|O_abortion_reverse|O_interrogate|O_immigration|O_marriage_reverse|O_Iran|O_affirmative_action_reverse|O_guns_reverse|O_deathpen|O_stem_cells_reverse|")) %>%
+  mutate(RSpecific_Issue = str_extract(Question, "R_environment|R_abortion_reverse|R_interrogation|R_immigration|R_marriage_reverse|R_Iran|R_affirmative_action_reverse|R_guns_reverse|R_deathpen|R_stem_cells_reverse")) 
+
+#Creating a Data set for only OIdeology 
+OIdeology_kleimantidy = kleimantidy %>%
+  select(c("Pnum", "Condition", "Response", "OIdeology")) %>%
+  filter(!is.na(OIdeology))
+
+#Creating a Data set for only RIdeology 
+RIdeology_kleimantidy = kleimantidy %>%
+  select(c("Pnum", "Condition", "Response", "RIdeology")) %>%
+  filter(!is.na(RIdeology))
+
+#Creating a Data set for only OIssue PROBLEM 
+OSpecificIssue_kleimantidy = kleimantidy %>%
+  select(c("Pnum", "Condition", "Response", "OSpecific_Issue"))
+  
+#OSpecificIssue_kleimantidy <- contains("O")
+
+  #mutate("OSpecific_Issue" = gsub(" ", "NA", Response)) %>%
+  #filter(!is.na("OSpecific_Issue"))
+
+#Creating a Data set for only RIssue
+RSpecificIssue_kleimantidy = kleimantidy %>%
+  select(c("Pnum", "Condition", "Response", "RSpecific_Issue")) %>%
+  filter(!is.na(RSpecific_Issue))
 ```
 
 # Step 4: Run analysis
 
 ## Pre-processing
 
-[you can remove this section if no pre-processing is required]
 
 ```{r}
+#Need to create Romney and Obama Ideology composites by taking the means of the three ideology questions for each particpant. 
+  
+Kcomposite_OIdeology = OIdeology_kleimantidy %>%
+group_by(Pnum, Condition) %>%
+  # What we want is the mean response.
+  summarise(OIdeology_composite = (mean(Response)))
+
+Kcomposite_RIdeology = RIdeology_kleimantidy %>%
+group_by(Pnum, Condition) %>%
+  # What we want is the mean response.
+  summarise(RIdeology_composite = (mean(Response)))
+
+#combining the two ideology means:
+ideologycomposite <- merge(Kcomposite_RIdeology, Kcomposite_OIdeology) %>%
+  mutate(delta_ideology = RIdeology_composite - OIdeology_composite)
+
+#Need to create Romney and Obama specific issues composite by taking the mean of the 10 issues for each participant 
+
+Kcomposite_OSpecificIssue = OSpecificIssue_kleimantidy %>%
+group_by(Pnum, Condition) %>%
+  # What we want is the mean response.
+  summarise(OSpecificIssue_composite = (mean(Response)))
+
+Kcomposite_RSpecificIssue = RSpecificIssue_kleimantidy %>%
+group_by(Pnum, Condition) %>%
+  # What we want is the mean response.
+  summarise(RSpecificIssue_composite = (mean(Response)))
+
+#combining the two issue means:
+SpecificIssuecomposite <- merge(Kcomposite_RSpecificIssue, Kcomposite_OSpecificIssue) %>%
+  mutate(delta_ideology = RSpecificIssue_composite - OSpecificIssue_composite)
 ```
 
 ## Descriptive statistics
 
 ```{r}
+#t.test for Ideology Means 
+  t.test(delta_ideology ~ Condition, 
+       data = ideologycomposite) 
 ```
 
 ## Inferential statistics
