@@ -109,12 +109,7 @@ RSpecificIssue_kleimantidy = kleimantidy %>%
 OSpecificIssue_kleimantidy = kleimantidy %>%
   select(c("Pnum", "Condition", "Response", "OSpecific_Issue"))
 
-#failed attempts to remove the blank cells 
-  #mutate("OSpecific_Issue" = contains("O_"))
-  #select(c("OSpecific_Issue"), contains("O_"))
-  #OSpecificIssue_kleimantidy <- contains("O")
-  #mutate("OSpecific_Issue" = gsub(" ", "NA", OSpecific_Issue) %>%
-  #filter(!is.na("OSpecific_Issue"))
+OSpecificIssue_kleimantidy <- subset(OSpecificIssue_kleimantidy, OSpecific_Issue != "")
 
 ```
 
@@ -154,7 +149,7 @@ group_by(Pnum, Condition) %>%
 
 #combining the two issue means:
 SpecificIssuecomposite <- merge(Kcomposite_RSpecificIssue, Kcomposite_OSpecificIssue) %>%
-  mutate(delta_ideology = RSpecificIssue_composite - OSpecificIssue_composite)
+  mutate(delta_SpecificIssue = RSpecificIssue_composite - OSpecificIssue_composite)
 ```
 
 ## Descriptive statistics
@@ -163,6 +158,11 @@ SpecificIssuecomposite <- merge(Kcomposite_RSpecificIssue, Kcomposite_OSpecificI
 #t.test for Ideology Means 
   t.test(delta_ideology ~ Condition, 
        data = ideologycomposite) 
+
+#t.test for Issue Means  
+t.test(delta_SpecificIssue ~ Condition, 
+       data = SpecificIssuecomposite) 
+
 ```
 
 ## Inferential statistics
@@ -172,7 +172,7 @@ SpecificIssuecomposite <- merge(Kcomposite_RSpecificIssue, Kcomposite_OSpecificI
 
 # Step 5: Conclusion
 
-I was able to reproduce the findings in regards to the t-test between the two idealogy means. My results alligned with the authors' findings. Because of technical issues, I wasn't able to reproduce the because of my own issues with R (I couldn't figure out how to get rid of blank cells). 
+I was able to reproduce both the t-test between the two idealogy difference means and issue difference means. My results alligned with the authors' findings. The only error was a rounding error: the authors found a t value of 2.38 for the specific issues t.test when it should have been 2.37. 
 
 
 ```{r}
@@ -198,7 +198,6 @@ locus_unidentified_resolved <- NA # how many discrete issues were there for whic
 Affects_Conclusion <- NA # Do any reproducibility issues encounter appear to affect the conclusions made in the original article? TRUE, FALSE, or NA. This is a subjective judgement, but you should taking into account multiple factors, such as the presence/absence of decision errors, the number of target outcomes that could not be reproduced, the type of outcomes that could or could not be reproduced, the difference in magnitude of effect sizes, and the predictions of the specific hypothesis under scrutiny.
 ```
 
-[PILOT/COPILOT DOD NOT EDIT THE CODE CHUNK BELOW]
 
 ```{r}
 reportObject <- reportObject %>%
