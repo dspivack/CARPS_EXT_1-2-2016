@@ -6,21 +6,19 @@ output:
     toc_float: true
 ---
 
-[PILOT/COPILOT - TEXT IN SQUARE BRACKETS IS HERE FOR GUIDANCE. COPILOT PLEASE DELETE BEFORE KNITTING THE FINAL REPORT]
-
 # Report Details
 
 
 ```{r}
-"1-2-2016" <- NA # insert the article ID code here e.g., "10-3-2015_PS"
-reportType <- NA # specify whether this is the 'pilot' report or 'final' report
-"Daphna Spivack" <- NA # insert the pilot's name here e.g., "Tom Hardwicke".  If there are multiple cpilots enter both names in a character string e.g., "Tom Hardwicke, Bob Dylan"
-"Zainab Hosseini" <- NA # # insert the co-pilot's name here e.g., "Michael Frank". If there are multiple co-pilots enter both names in a character string e.g., "Tom Hardwicke, Bob Dylan"
-pilotTTC <- NA # insert the pilot's estimated time to complete (in minutes, fine to approximate) e.g., 120
-600 <- NA # insert the co-pilot's estimated time to complete (in minutes, fine to approximate) e.g., 120
-"11/3/2018" <- NA # insert the pilot's start date in US format e.g., as.Date("01/25/18", format = "%m/%d/%y")
+articleID <- "1-2-2016" # insert the article ID code here e.g., "10-3-2015_PS"
+reportType <- "pilot" # specify whether this is the 'pilot' report or 'final' report
+pilotNames <- "Daphna Spivack" # insert the pilot's name here e.g., "Tom Hardwicke".  If there are multiple cpilots enter both names in a character string e.g., "Tom Hardwicke, Bob Dylan"
+copilotNames <- "Zainab Hosseini" # insert the co-pilot's name here e.g., "Michael Frank". If there are multiple co-pilots enter both names in a character string e.g., "Tom Hardwicke, Bob Dylan"
+pilotTTC <- 600 # insert the pilot's estimated time to complete (in minutes, fine to approximate) e.g., 120
+copilotTTC <- NA # insert the co-pilot's estimated time to complete (in minutes, fine to approximate) e.g., 120
+pilotStartDate <- "11/3/2018" # insert the pilot's start date in US format e.g., as.Date("01/25/18", format = "%m/%d/%y")
 copilotStartDate <- NA # insert the co-pilot's start date in US format e.g., as.Date("01/25/18", format = "%m/%d/%y")
-"10/4/2018" <- NA # copilot insert the date of final report completion (after any necessary rounds of author assistance) in US format e.g., as.Date("01/25/18", format = "%m/%d/%y")
+completionDate <-"10/4/2018" # copilot insert the date of final report completion (after any necessary rounds of author assistance) in US format e.g., as.Date("01/25/18", format = "%m/%d/%y")
 ```
 
 ------
@@ -47,8 +45,6 @@ The authors then calulated their dependent variable: the perceived difference be
 variable and the perceived difference between
 Romney’s and Obama’s general ideologies as the dependent variable showed a significant difference between conditions. Specifically, participants in the incompatible condition perceived the difference between the candidates’ ideologies as smaller than did participants in the compatible condition, t(237) = 2.06, p = .04, d = 0.27, 95% confidence interval (CI) for the mean difference = [0.02, 1.08] (see Table 1 for means and standard deviations).4 Additionally, participants in the incompatible condition perceived the difference between the candidates’ stances on specific political issues as smaller than did participants in the compatible condition, t(237) = 2.38, p = .02, d = 0.31, 95% CI for the mean difference = [0.08, 0.82] (see Table 1)"
 ------
-
-[PILOT/COPILOT DO NOT CHANGE THE CODE IN THE CHUNK BELOW]  
 
 ```{r global_options, include=FALSE}
 # sets up some formatting options for the R Markdown document
@@ -104,23 +100,22 @@ RIdeology_kleimantidy = kleimantidy %>%
   select(c("Pnum", "Condition", "Response", "RIdeology")) %>%
   filter(!is.na(RIdeology))
 
-#Creating a Data set for only OIssue PROBLEM 
-OSpecificIssue_kleimantidy = kleimantidy %>%
-  select(c("Pnum", "Condition", "Response", "OSpecific_Issue"))
-
-  #mutate("OSpecific_Issue" = contains("O_"))
-  
-  #select(c("OSpecific_Issue"), contains("O_"))
-  
-#OSpecificIssue_kleimantidy <- contains("O")
-
-  #mutate("OSpecific_Issue" = gsub(" ", "NA", OSpecific_Issue) %>%
-  #filter(!is.na("OSpecific_Issue"))
-
 #Creating a Data set for only RIssue
 RSpecificIssue_kleimantidy = kleimantidy %>%
   select(c("Pnum", "Condition", "Response", "RSpecific_Issue")) %>%
   filter(!is.na(RSpecific_Issue))
+
+#Creating a Data set for only OIssue *PROBLEM HERE*  
+OSpecificIssue_kleimantidy = kleimantidy %>%
+  select(c("Pnum", "Condition", "Response", "OSpecific_Issue"))
+
+#failed attempts to remove the blank cells 
+  #mutate("OSpecific_Issue" = contains("O_"))
+  #select(c("OSpecific_Issue"), contains("O_"))
+  #OSpecificIssue_kleimantidy <- contains("O")
+  #mutate("OSpecific_Issue" = gsub(" ", "NA", OSpecific_Issue) %>%
+  #filter(!is.na("OSpecific_Issue"))
+
 ```
 
 # Step 4: Run analysis
@@ -178,8 +173,7 @@ SpecificIssuecomposite <- merge(Kcomposite_RSpecificIssue, Kcomposite_OSpecificI
 # Step 5: Conclusion
 
 I was able to reproduce the findings in regards to the t-test between the two idealogy means. My results alligned with the authors' findings. Because of technical issues, I wasn't able to reproduce the because of my own issues with R (I couldn't figure out how to get rid of blank cells). 
-  
-[PILOT/COPILOT ENTER RELEVANT INFORMATION BELOW]
+
 
 ```{r}
 Author_Assistance = FALSE # was author assistance provided? (if so, enter TRUE)
@@ -242,8 +236,6 @@ if(reportType == "final"){
 ```
 
 # Session information
-
-[This function will output information about the package versions used in this report:]
 
 ```{r session_info, include=TRUE, echo=TRUE, results='markup'}
 devtools::session_info()
